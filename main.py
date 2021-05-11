@@ -119,7 +119,15 @@ def add_page(id):
     qry = "SELECT * from " + id.capitalize()
     mycursor.execute(qry)
     fields = mycursor.column_names
-
+    if id == "Patient":
+        qry = "SELECT * FROM USER"
+        mycursor.execute(qry)
+        fields += mycursor.column_names
+    fields = list(fields)
+    if 'user_id' in fields:
+        fields.remove('user_id')
+    if 'User_ID' in fields:
+        fields.remove('User_ID')
     return render_template('add_page.html',success=request.args.get('success'), error=request.args.get('error'), fields = fields, id= id)
 
 @app.route("/add_User", methods=['POST','GET'])
@@ -193,7 +201,7 @@ def add_Patient():
     qry = "SELECT * from Patient"
     mycursor.execute(qry)
     fields = mycursor.column_names
-
+    print("Fields:", fields)
     val = ()
 
     for field in fields:
@@ -204,6 +212,8 @@ def add_Patient():
             temp = 'NULL'
         val = val + (temp,)
 
+    insertionFields = ""
+    insertionValues = ""
     qry = "INSERT INTO Patient Values (%s,%s,%s,%s,%s)"%val
     print(qry)
     success = True
@@ -791,6 +801,7 @@ def search_Patient_details():
     mycursor.execute(qry)
     fields = mycursor.column_names
     res = mycursor.fetchall()
+
 
     return render_template('/search_and_show_list.html',res=res,fields=fields)
 
